@@ -1,10 +1,13 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div id="container" class="container">
     <div class="row justify-content-center align-items-center min-vh-100">
       <div class="col-lg-6">
         <div class="card">
           <div class="card-body">
-            <h2 class="card-title text-center">Work Watch</h2>
+            <div class="col-md-4 mx-auto p-0 mb-2">
+              <img src="../../../public/img/name.png" class="img-fluid custom-image">
+            </div>
             <a-form
               name="horizontal_login"
               layout="vertical"
@@ -17,21 +20,31 @@
                 :validate-status="validateStatus.document"
                 :help="helpText.document"
               >
-              <label class="label-input">Documento do empregado</label>
-                <a-input placeholder="Documento" name="document" v-model:value="formState.login.document" @input="handleInput('document', $event)">
+                <label class="label-input">Documento do empregado</label>
+                <a-input
+                  placeholder="Documento"
+                  name="document"
+                  v-model:value="formState.login.document"
+                  @input="handleInput('document', $event)"
+                >
                   <template #prefix>
                     <UserOutlined class="site-form-item-icon" />
                   </template>
                 </a-input>
               </a-form-item>
 
-              <a-form-item 
-                name="password" 
+              <a-form-item
+                name="password"
                 :validate-status="validateStatus.password"
                 :help="helpText.password"
               >
-              <label class="label-input">Senha</label>
-                <a-input-password placeholder="Senha" name="password" v-model:value="formState.login.password" @input="handleInput('password', $event)">
+                <label class="label-input">Senha</label>
+                <a-input-password
+                  placeholder="Senha"
+                  name="password"
+                  v-model:value="formState.login.password"
+                  @input="handleInput('password', $event)"
+                >
                   <template #prefix>
                     <LockOutlined class="site-form-item-icon" />
                   </template>
@@ -39,12 +52,14 @@
               </a-form-item>
 
               <a-form-item class="text-center">
-                <a-button type="primary" :loading="loading.loadingButton" html-type="submit">Entrar</a-button>
+                <a-button type="primary" :loading="loading.loadingButton" html-type="submit"
+                  >Entrar</a-button
+                >
               </a-form-item>
             </a-form>
             <div class="msg-desc">
-              Tenha o controle total sobre as atividades de trabalho de sua equipe, 
-              garantindo maior eficiência e produtividade.
+              Tenha o controle total sobre as atividades de trabalho de sua equipe, garantindo maior
+              eficiência e produtividade.
             </div>
           </div>
         </div>
@@ -55,8 +70,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { formatDocument } from '../utils/document'
+import { formatDocument } from '../../utils/document'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+import { loginSession } from "../../services/login"
 
 const formState = ref({
   login: {
@@ -85,22 +101,29 @@ const handleSubmit = () => {
   const documentValidation = validateField('document')
   const passwordValidation = validateField('password')
 
+  const responseBody = {
+    document: formState.value.login.document,
+    password: formState.value.login.password
+  }
+
   if (documentValidation.valid && passwordValidation.valid) {
-    loading.value.loadingButton = false
-    console.log('Envio de informações')
+    loginSession(responseBody)
+      .then(({ data }) => {
+        console.log(`O valor da requisição aceita: ${data}`)
+        setTimeout(() => {
+          window.location.pathname = "/home"
+        }, 1000)
+      })
+      .catch((error) => {
+        console.log(`O erro foi ${error} e o seu status é ${error.error.status}`)
+      })
+      .finally(() => {
+        loading.value.loadingButton = false
+      })
   } else {
     loading.value.loadingButton = false
     console.log('Preencha os campos corretamente')
   }
-}
-
-const handleInput = (fieldName, event) => {
-  const { value } = event.target
-  const formattedValue = formatField(fieldName, value)
-
-  formState.value.login[fieldName] = formattedValue
-  validateStatus.value[fieldName] = ''
-  helpText.value[fieldName] = ''
 }
 
 const validateField = (fieldName) => {
@@ -122,6 +145,15 @@ const validateField = (fieldName) => {
   helpText.value[fieldName] = validation.message
 
   return validation
+}
+
+const handleInput = (fieldName, event) => {
+  const { value } = event.target
+  const formattedValue = formatField(fieldName, value)
+
+  formState.value.login[fieldName] = formattedValue
+  validateStatus.value[fieldName] = ''
+  helpText.value[fieldName] = ''
 }
 
 const formatField = (fieldName, value) => {
