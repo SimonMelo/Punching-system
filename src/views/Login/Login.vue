@@ -73,6 +73,7 @@ import { ref } from 'vue'
 import { formatDocument } from '../../utils/document'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { loginSession } from "../../services/login"
+import { useRouter } from 'vue-router'
 
 const formState = ref({
   login: {
@@ -96,8 +97,11 @@ const helpText = ref({
   password: ''
 })
 
+const router = useRouter();
+
 const handleSubmit = () => {
   loading.value.loadingButton = true
+
   const documentValidation = validateField('document')
   const passwordValidation = validateField('password')
 
@@ -111,7 +115,7 @@ const handleSubmit = () => {
       .then(({ data }) => {
         console.log(`O valor da requisição aceita: ${data}`)
         setTimeout(() => {
-          window.location.pathname = "/home"
+          router.replace("/home")
         }, 1000)
       })
       .catch((error) => {
@@ -122,7 +126,6 @@ const handleSubmit = () => {
       })
   } else {
     loading.value.loadingButton = false
-    console.log('Preencha os campos corretamente')
   }
 }
 
