@@ -1,8 +1,30 @@
+using Backend.Database;
+using Backend.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuração do CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
+// Configuração do banco de dados
+builder.Services.AddScoped<UserService>();
+builder.Services.AddDbContext<LoginDB>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("PushingSystem")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -13,8 +35,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false, // Modifique conforme necessário
-            ValidateAudience = false, // Modifique conforme necessário
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("7b4e943e0d59c10f4a7a5d3f9d0f0b28c92a526af8475f2ebda4d7f53023cbdb"))
@@ -41,6 +63,9 @@ app.UseRouting();
 
 // Habilitar autorização
 app.UseAuthorization();
+
+// Middleware CORS
+app.UseCors("AllowAllOrigins");
 
 app.MapControllerRoute(
     name: "default",
