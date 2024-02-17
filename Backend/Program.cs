@@ -1,8 +1,5 @@
-using Backend.Database;
 using Backend.Models;
-using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -20,11 +17,6 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
-
-// Configuração do banco de dados
-builder.Services.AddScoped<UserService>();
-builder.Services.AddDbContext<LoginDB>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("PushingSystem")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

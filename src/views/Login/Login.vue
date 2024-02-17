@@ -73,7 +73,7 @@ import { ref } from 'vue'
 import { formatDocument } from '../../utils/document'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { loginSession } from "../../services/login"
-import { useRouter } from 'vue-router'
+import { AlertModal } from "../../components/AlertModal"
 
 const formState = ref({
   login: {
@@ -97,29 +97,29 @@ const helpText = ref({
   password: ''
 })
 
-const router = useRouter();
-
 const handleSubmit = () => {
   loading.value.loadingButton = true
 
   const documentValidation = validateField('document')
   const passwordValidation = validateField('password')
 
+  const document = formState.value.login.document.replace(/\D/g, "")
+
   const responseBody = {
-    document: formState.value.login.document,
+    document: document,
     password: formState.value.login.password
   }
 
   if (documentValidation.valid && passwordValidation.valid) {
     loginSession(responseBody)
-      .then(({ data }) => {
-        console.log(`O valor da requisição aceita: ${data}`)
+      .then(() => {
+        AlertModal("success", "Login efetuado com sucesso.")
         setTimeout(() => {
-          router.replace("/home")
+          window.location.pathname ="/home"
         }, 1000)
       })
       .catch((error) => {
-        console.log(`O erro foi ${error} e o seu status é ${error.error.status}`)
+        AlertModal("error", error ? error.response.data : "Houve um problema interno. Tente novamente mais tarde.")
       })
       .finally(() => {
         loading.value.loadingButton = false
