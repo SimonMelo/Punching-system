@@ -54,7 +54,7 @@ namespace Backend.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private SymmetricSecurityKey GenerateRandomSecurityKey() 
+        public static SymmetricSecurityKey GenerateRandomSecurityKey() 
         {
             var keyBytes = new byte[32];
             new Random().NextBytes(keyBytes);

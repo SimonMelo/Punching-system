@@ -1,9 +1,10 @@
 import Login from '@/views/Login/Login.vue'
 import Home from '@/views/Home/Home.vue'
+import Dashboard from '@/views/Dashboard/Dashboard.vue'
 
 const routes = [
   {
-    path: '/',
+    path: '/login',
     name: 'login',
     component: Login
   },
@@ -11,6 +12,11 @@ const routes = [
     path: '/home',
     name: 'home',
     component: Home
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: Dashboard
   }
 ]
 

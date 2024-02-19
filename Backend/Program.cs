@@ -1,8 +1,11 @@
-using Backend.Models;
+using Backend.Middleware; // Importe o namespace onde está o TokenRefreshMiddleware
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +42,9 @@ var app = builder.Build();
 
 // Habilitar autenticação
 app.UseAuthentication();
+
+// Middleware de Refresh Token
+app.UseMiddleware<TokenRefreshMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

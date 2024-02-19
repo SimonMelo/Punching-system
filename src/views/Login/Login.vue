@@ -74,6 +74,7 @@ import { formatDocument } from '../../utils/document'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { loginSession } from "../../services/login"
 import { AlertModal } from "../../components/AlertModal"
+import { setAccessToken } from '@/services/auth'
 
 const formState = ref({
   login: {
@@ -112,10 +113,12 @@ const handleSubmit = () => {
 
   if (documentValidation.valid && passwordValidation.valid) {
     loginSession(responseBody)
-      .then(() => {
+      .then(({ data }) => {
         AlertModal("success", "Login efetuado com sucesso.")
+        const token = data.token
         setTimeout(() => {
           window.location.pathname ="/home"
+          setAccessToken(token)
         }, 1000)
       })
       .catch((error) => {
